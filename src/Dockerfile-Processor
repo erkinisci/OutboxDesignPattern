@@ -1,0 +1,17 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+COPY ["Orders.Processor/Orders.Processor.csproj", "Orders.Processor/"]
+COPY ["Orders.Contracts/Orders.Contracts.csproj", "Orders.Contracts/"]
+
+RUN dotnet restore "Orders.Processor/Orders.Processor.csproj"
+
+COPY . .
+RUN dotnet publish -c Release -o /app Orders.Processor/Orders.Processor.csproj
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS publish
+WORKDIR /app
+
+COPY --from=build /app ./
+
+ENTRYPOINT ["dotnet", "Orders.Processor.dll"]
