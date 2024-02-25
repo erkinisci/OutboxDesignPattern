@@ -8,3 +8,16 @@ This repository showcases the implementation and utilization of MassTransit's tr
 Adds the transactional outbox delivery service as a hosted service, which delivers outbox message to the transport
 
 **Order Processor Service:** This separate service illustrates the consumption of order events. It autonomously processes the events, showcasing the decoupled nature of event-driven architectures.
+
+## Build and Run the Docker Containers
+
+Open a terminal in the same directory where `compose.yml` file and run:
+
+    docker-compose up --build
+
+This command builds and runs the Docker containers as defined in the `compose.yml` file.
+
+    docker-compose down
+
+This command kills the running container
+
