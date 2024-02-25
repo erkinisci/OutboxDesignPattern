@@ -92,11 +92,26 @@ builder.Services.AddMassTransit(x =>
             .UseBusOutbox();
     });
     
-    x.UsingAzureServiceBus((ctx, cfg) =>
+    x.UsingRabbitMq((_, cfg) =>
     {
-        cfg.Host(configuration.GetConnectionString("ServiceBus"), _ => {});
-        cfg.ConfigureEndpoints(ctx);
+        cfg.AutoStart = true;
     });
+
+    // x.UsingRabbitMq((context,cfg) =>
+    // {
+    //     cfg.Host("localhost", "/", h => {
+    //         h.Username("guest");
+    //         h.Password("guest");
+    //     });
+    //
+    //     cfg.ConfigureEndpoints(context);
+    // });
+    
+    // x.UsingAzureServiceBus((ctx, cfg) =>
+    // {
+    //     cfg.Host(configuration.GetConnectionString("ServiceBus"), _ => {});
+    //     cfg.ConfigureEndpoints(ctx);
+    // });
 });
 
 

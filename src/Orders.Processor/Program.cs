@@ -23,11 +23,16 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumers(assembly);
     x.AddActivities(assembly);
     
-    x.UsingAzureServiceBus((ctx, cfg) =>
+    x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host(configuration.GetConnectionString("ServiceBus"), _ => {});
-        cfg.ConfigureEndpoints(ctx);
+        cfg.ConfigureEndpoints(context);
     });
+    
+    // x.UsingAzureServiceBus((ctx, cfg) =>
+    // {
+    //     cfg.Host(configuration.GetConnectionString("ServiceBus"), _ => {});
+    //     cfg.ConfigureEndpoints(ctx);
+    // });
 });
 
 builder.Services.AddDbContext<AppDbContext>(x =>
