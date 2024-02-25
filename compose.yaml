@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  postgres:
+    container_name: 'postgresdb'
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=changeit
+      - POSTGRES_DB=ordersdb
+    ports:
+      - '5432:5432'
+  api:
+    container_name: 'order-api'
+    image: orders/api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__Database=host=postgres;Port=5432;user id=postgres;password=changeit;database=ordersdb;
+      - ConnectionStrings__ServiceBus= ##azure-service-bus-connStr###
+    build:
+      context: ./src
+      dockerfile: Dockerfile-Api
+    ports:
+      - '5000:80'
+  service:
+    container_name: 'order-processor'
+    image: orders/processor
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Database=host=postgres;Port=5432;user id=postgres;password=changeit;database=ordersdb;
+      - ConnectionStrings__ServiceBus= ##azure-service-bus-connStr###
+    build:
+      context: ./src
+      dockerfile: Dockerfile-Processor

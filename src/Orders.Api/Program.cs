@@ -1,3 +1,4 @@
+using System.Reflection;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using MassTransit;
@@ -11,11 +12,17 @@ using Orders.Api.Validation;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
+builder.Services.AddHostedService<RecreateDatabaseHostedService<AppDbContext>>();
+
 builder.Services.AddDbContext<AppDbContext>(x =>
 {
     x.UseNpgsql(configuration.GetConnectionString("Database"), opt =>
     {
+        opt.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
+        opt.MigrationsHistoryTable($"__{nameof(AppDbContext)}");
+        
         opt.EnableRetryOnFailure(5);
+        opt.MinBatchSize(1);
     });
 });
 
