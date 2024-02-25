@@ -24,6 +24,16 @@ public class OrderRepository(AppDbContext appDbContext) : IOrderRepository
         return result > 0;
     }
 
+    public async Task<bool> UpdateAsync<T>(Order order, Func<Order, Task<T>?> outboxAction, bool continueOnCapturedContext = false) where T : class
+    {
+        appDbContext.Orders.Update(order);
+        
+        await outboxAction(order)!.ConfigureAwait(continueOnCapturedContext);
+        
+        var result = await appDbContext.SaveChangesAsync();
+        return result > 0;
+    }
+
     public async Task<bool> DeleteAsync(Guid id)
     {
         var order = await FindAsync(id);
@@ -32,7 +42,18 @@ public class OrderRepository(AppDbContext appDbContext) : IOrderRepository
         var result = await appDbContext.SaveChangesAsync();
         return result > 0;
     }
-    
+
+    public async Task<bool> DeleteAsync<T>(Guid id, Func<Guid, Task<T>?> outboxAction, bool continueOnCapturedContext = false) where T : class
+    {
+        var order = await FindAsync(id);
+        appDbContext.Orders.Remove(order!);
+        
+        await outboxAction(id)!.ConfigureAwait(continueOnCapturedContext);
+
+        var result = await appDbContext.SaveChangesAsync();
+        return result > 0;
+    }
+
     public async Task<bool> SaveAsync(CancellationToken cancellationToken)
     {
         var result = await appDbContext.SaveChangesAsync(cancellationToken);

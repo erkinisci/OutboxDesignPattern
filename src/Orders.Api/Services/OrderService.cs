@@ -47,18 +47,30 @@ public class OrderService(IOrderRepository orderRepository, IPublishEndpoint pub
             throw new ValidationException(errorMessage, GenerateValidationError(errorMessage));
         }
         
-        return await orderRepository.UpdateAsync(order);
+        return await orderRepository.UpdateAsync(order, async _ =>
+        {
+            var message = new OrderUpdated(order.Id, order.CustomerId, order.PaymentId, (int)order.OrderStatus, order.OrderDate);
+            await publishEndpoint.Publish(message);
+            return message;
+        });
     }
 
     public async Task<bool> DeleteAsync(Guid id)
     {
         var findOrder = await orderRepository.FindAsync(id);
 
-        if (findOrder is not null) 
-            return await orderRepository.DeleteAsync(id);
+        if (findOrder is null)
+        {
+            var errorMessage = $"An order with id {id} does not exists";
+            throw new ValidationException(errorMessage, GenerateValidationError(errorMessage));
+        }
         
-        var errorMessage = $"An order with id {id} does not exists";
-        throw new ValidationException(errorMessage, GenerateValidationError(errorMessage));
+        return await orderRepository.DeleteAsync(id, async _ =>
+        {
+            var message = new OrderDeleted(id);
+            await publishEndpoint.Publish(message);
+            return message;
+        });
     }
     
     private static ValidationFailure[] GenerateValidationError(string message)

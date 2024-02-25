@@ -5,7 +5,7 @@ using Orders.Processor;
 var builder = Host.CreateApplicationBuilder(args);
 var configuration = builder.Configuration;
 
-builder.Services.AddHostedService<Worker>();
+//builder.Services.AddHostedService<Worker>();
 
 
 builder.Services.AddMassTransit(x =>

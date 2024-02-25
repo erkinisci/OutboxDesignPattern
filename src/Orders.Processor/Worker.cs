@@ -1,23 +1,20 @@
+using MassTransit;
+
 namespace Orders.Processor;
 
-public class Worker : BackgroundService
+public class Worker(ILogger<Worker> logger, IBus bus) : BackgroundService
 {
-    private readonly ILogger<Worker> _logger;
-
-    public Worker(ILogger<Worker> logger)
-    {
-        _logger = logger;
-    }
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            if (_logger.IsEnabled(LogLevel.Information))
+            if (logger.IsEnabled(LogLevel.Information))
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             }
 
+            await bus.Publish("Order.Processor has stopped", stoppingToken);
+            
             await Task.Delay(1000, stoppingToken);
         }
     }
