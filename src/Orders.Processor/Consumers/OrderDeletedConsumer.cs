@@ -7,7 +7,9 @@ public class OrderDeletedConsumer(ILogger<OrderDeletedConsumer> logger) : IConsu
 {
     public Task Consume(ConsumeContext<OrderDeleted> context)
     {
-        logger.LogInformation(context.Message.ToString());
+        var message = context.Message;
+
+        logger.LogInformation(message.ToString());
         
         return Task.CompletedTask;
     }

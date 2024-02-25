@@ -7,7 +7,8 @@ public class OrderUpdatedConsumer(ILogger<OrderUpdatedConsumer> logger) : IConsu
 {
     public Task Consume(ConsumeContext<OrderUpdated> context)
     {
-        logger.LogInformation(context.Message.ToString());
+        var message = context.Message;
+        logger.LogInformation(message.ToString());
         
         return Task.CompletedTask;
     }
