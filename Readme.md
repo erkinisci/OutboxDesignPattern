@@ -21,3 +21,13 @@ This command builds and runs the Docker containers as defined in the `compose.ym
 
 This command kills the running container
 
+### Additional Tips:
+
+- **Running 'master' Branch:**
+    - It uses; **Azure Service Bus** transport
+
+- **Running 'jaeger-opentelemetry' Branch:**
+    - It uses; **Azure Service Bus** transport & OpenTelemetry + Jaeger exporter, however not complete yet
+
+- **Running 'rabbitmq' Branch:**
+    - It uses; **RabbitMQ** transport.
